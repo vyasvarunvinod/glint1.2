@@ -3,7 +3,9 @@ import { ProductCard } from "@/components/product/ProductCard";
 
 export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  let products = await getCollection(resolvedParams.slug);
+  let products = resolvedParams.slug === "all"
+    ? await getProducts()
+    : await getCollection(resolvedParams.slug);
   
   if (resolvedParams.slug === 'hot-selling') {
     const all = await getProducts();

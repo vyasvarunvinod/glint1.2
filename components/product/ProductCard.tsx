@@ -1,15 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { useCart } from "@/lib/context/CartContext";
+import { useWishlist } from "@/lib/context/WishlistContext";
 import { Product } from "@/types";
 import { Heart } from "lucide-react";
 
 export const ProductCard = ({ product }: { product: Product }) => {
   const { addToCart } = useCart();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { wishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = wishlist.some((item) => item.id === product.id);
 
   // Calculate discount
   const discount = product.compareAtPrice 
@@ -33,7 +36,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
 
         {/* Wishlist Button */}
         <button 
-          onClick={(e) => { e.preventDefault(); setIsWishlisted(!isWishlisted); }}
+          onClick={() => toggleWishlist(product)}
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center border border-gray-100 shadow-sm hover:scale-110 transition-transform"
         >
@@ -42,19 +45,23 @@ export const ProductCard = ({ product }: { product: Product }) => {
           />
         </button>
 
-        <Image
-          src={product.images[0]?.url || "/placeholder.svg"}
-          alt={product.title}
-          fill
-          sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        <Link href={`/products/${product.slug}`} aria-label={`View ${product.title}`} className="absolute inset-0">
+          <Image
+            src={product.images[0]?.url || "/placeholder.svg"}
+            alt={product.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </Link>
       </div>
 
       <div className="pt-3 flex flex-col flex-grow justify-between">
         <div>
           <h3 className="font-bold text-sm text-[#1F1215] line-clamp-1">
-            {product.title}
+            <Link href={`/products/${product.slug}`} className="hover:text-[#E63956]">
+              {product.title}
+            </Link>
           </h3>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             <span className="text-sm font-extrabold text-[#1F1215]">
